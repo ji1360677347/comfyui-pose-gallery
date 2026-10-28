@@ -10,9 +10,40 @@ ComfyUI 本地中文姿势图库节点。参考并改编 [ai-pose-gallery-zh](ht
 
 ## 安装
 
-1. 在 `ComfyUI/custom_nodes` 目录执行：`git clone https://github.com/wangweihong/comfyui-pose-gallery.git`，或将本目录放入 `ComfyUI/custom_nodes/comfyui-pose-gallery`。
-2. 使用 ComfyUI 的 Python 执行 `python scripts/install_library.py`，下载用户指定仓库的数据、缩略图和原图；也可用 `--source /path/to/ai-pose-gallery-zh` 从已有 clone 安装。约 660 MB。无需在浏览时联网。
-3. 重启 ComfyUI 并刷新浏览器。依赖均使用 ComfyUI 已有的 Pillow、NumPy、PyTorch、aiohttp。
+在 `ComfyUI/custom_nodes` 目录执行：
+
+```bash
+git clone https://github.com/wangweihong/comfyui-pose-gallery.git
+```
+
+重启 ComfyUI 并刷新浏览器。仓库已直接包含 **1,439 张 JPG 缩略图和中文索引**，克隆后即可离线浏览、搜索和筛选图库，无需另外下载缩略图。
+
+```text
+comfyui-pose-gallery/
+└── library/
+    ├── data/       # 随仓库提供的中文姿势索引和分类
+    ├── thumbs/     # 随仓库提供的 1,439 张缩略图
+    └── SOURCE.json # 素材来源和版本
+```
+
+### 安装原尺寸图片（用于大图预览及生图）
+
+缩略图为 300×400 JPG；节点向工作流输出的原图为 900×1200 PNG。**本仓库包含缩略图，原尺寸 PNG 仍需单独安装**。在节点目录使用 ComfyUI 所在环境的 Python 执行：
+
+```bash
+cd comfyui-pose-gallery
+python scripts/install_library.py
+```
+
+脚本需要 Git，会从 [wangweihong/ai-pose-gallery-zh](https://github.com/wangweihong/ai-pose-gallery-zh) 获取完整图库，约 660 MB，并将原图安装到 `library/img/`。已有完整图库 Git clone 时，也可直接复制安装：
+
+```bash
+python scripts/install_library.py --source /path/to/ai-pose-gallery-zh
+```
+
+安装完成后，浏览姿势和向工作流加载原图均使用本地文件。已经安装完整素材的环境无需重复下载；本项目实测的本地 ComfyUI 环境已有全部原图和缩略图。若提示“图片缺失”，请先安装原图，再重启 ComfyUI。
+
+节点依赖均使用 ComfyUI 已有的 Pillow、NumPy、PyTorch、aiohttp。
 
 高级：`COMFYUI_POSE_GALLERY_LIBRARY` 可指定服务器上已有的完整图库根目录（含 data、img、thumbs）；默认使用本插件 `library/`。浏览器只能读取元数据允许的图片，路径穿越和外部文件符号链接会被拒绝。
 
@@ -44,7 +75,7 @@ PNG 包含实际 API 参数和可导入工作流。开发工作区的 `images/mo
 
 ## 素材和许可
 
-节点代码及改编的画廊页面遵循 MIT；保留上游声明，详见 LICENSE、NOTICE.md。图片及原始数据权利属于原作者ギア，中文数据由 Anhao 整理，不适用代码 MIT 许可。素材单独下载到忽略目录 `library/`，源码仓库和源码包不包含素材。原站链接和来源说明保留，已移除上游统计脚本。
+节点代码及改编的画廊页面遵循 MIT；保留上游声明，详见 LICENSE、NOTICE.md。图片及原始数据权利属于原作者ギア，中文数据由 Anhao 整理，不适用代码 MIT 许可。仓库的 `library/thumbs/` 和 `library/data/` 包含来自原图库的缩略图及中文索引，并保留素材来源和上游许可说明；这些素材不适用节点代码的 MIT 许可。原尺寸 PNG 单独安装到 `library/img/`，该目录不纳入 Git。原站链接和来源说明保留，已移除上游统计脚本。
 
 ## 验证
 

@@ -1,3 +1,11 @@
-library/
+library/*
+!library/thumbs/
+!library/data/
+!library/SOURCE.json
+!library/LICENSE
+!library/README.md
+library/data/*
+!library/data/pose-zh.json
+!library/data/meta-zh.json
 __pycache__/
 *.pyc
