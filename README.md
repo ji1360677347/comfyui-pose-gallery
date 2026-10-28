@@ -8,6 +8,15 @@ ComfyUI 本地中文姿势图库节点。参考并改编 [ai-pose-gallery-zh](ht
 
 输出：`image`（RGB，900×1200）、`width`、`height`、`pose_id`、`description`。输出 `image` 可连接 Depth Anything、图像预览及其他图像节点。不自动入队；用户点击 ComfyUI“运行”开始生成。
 
+## 工作流选择
+
+| 工作流 | 输入与用途 | 本地实测 |
+| --- | --- | --- |
+| [MOSS 深度控制参考版](example_workflows/pose_gallery_moss_sft50_reference.json) | 图库姿势 → Depth Anything 深度图 → 根据文字生成角色 | SFT 50 步，ER-SDE，896×1184，约 46.4 秒 |
+| [Qwen Image 2.1 姿态编辑](example_workflows/pose_gallery_qwen21_pose_edit.json) | 图库姿势 + 人物参考 → 保留人物外观并迁移姿态 | 25 步，Euler/simple，896×1184，约 17 秒/张（模型已加载） |
+
+下方提供实际 ComfyUI 截图及姿势与成图对照。运行时间受硬件、模型加载与缓存影响。
+
 ## 安装
 
 在 `ComfyUI/custom_nodes` 目录执行：
@@ -83,6 +92,51 @@ PNG 包含实际 API 参数和可导入工作流。开发工作区的 `images/mo
 - 参考文件外层为 24 步，本版保留用户要求的 50 步。主模型使用本机 SFT BF16；Turbo LoRA 不启用。
 - 深度图按原比例缩放到约 1 MP，通过 GetImageSize 自动连接潜空间宽高；使用兼容 MOSS 的 EmptyFlux2LatentImage。
 - 结果保存为 `images/moss/pose/depth/reference_depth_*.png` 和 `images/moss/pose/result/reference_ersde_sft50_*.png`（相对于 ComfyUI output）。
+
+### MOSS 使用步骤与示例
+
+1. 安装 `comfyui_controlnet_aux` 并准备上文模型。导入[ER-SDE 参考版工作流](example_workflows/pose_gallery_moss_sft50_reference.json)，在模型节点选择本机权重。
+2. 在 Pose Gallery 浏览图库并点击“使用此姿势 → ComfyUI”，检查节点原图是否显示。
+3. 修改正向提示词中的人物、服装、场景和动作，再运行。Depth Anything 自动从图库线稿生成深度图，MOSS 根据深度与文字生图。
+4. 在 `output/images/moss/pose/depth/` 和 `output/images/moss/pose/result/` 查看深度图及成图。
+
+以下为参考版 ER-SDE 50 步的实际运行截图；深度强度 0.5、控制范围 0–0.6，完整参数见上文。截图展示采样与输出区域，导入 JSON 可查看完整连线。
+
+![MOSS ER-SDE 50步工作流实测截图](docs/images/moss_ersde_workflow.png)
+
+| 图库原图：P031 正面 | Depth Anything 深度图 | MOSS 生成结果 |
+| --- | --- | --- |
+| ![P031跪姿原图](library/img/full_sexy_P031_front.png) | ![P031深度图](docs/images/moss_reference_depth.png) | ![MOSS跪姿生成结果](docs/images/moss_reference_result.png) |
+
+姿势 ID：`full_sexy_P031_front`。示例人物穿绿色上衣与米色长裤，姿态为跪姿、双手置于脑后。深度约束整体轮廓，人物细节和背景由提示词生成。
+
+## Qwen Image 2.1 · Pose Gallery 姿态编辑
+
+导入 [`example_workflows/pose_gallery_qwen21_pose_edit.json`](example_workflows/pose_gallery_qwen21_pose_edit.json)，使用图库姿势原图与人物参考双图输入，配合 Qwen2.1 专用 Pose Studio v2 LoRA。通用提示词不含固定动作名称，已本地测试 P002 站姿与 P031 跪姿；25 步、CFG 1、Euler/simple，输出 896×1184。
+
+导入前请查看[完整操作、模型依赖及实测结果](example_workflows/qwen21_pose_gallery.md)，复制附带人物参考图到 ComfyUI input，或选择自己的图片，并重选本机模型路径。该工作流使用 Pose Gallery 图库，不需要 VNCCS 3D 编辑节点。其他姿势效果需自行评估。
+
+### Qwen 使用步骤与示例
+
+1. 将[示例人物参考图](example_workflows/assets/pose_gallery_person_reference.png) 复制到 `ComfyUI/input/`，或直接在 Load Image 中选择自己的成人角色参考图。
+2. 导入[Qwen 姿态编辑工作流](example_workflows/pose_gallery_qwen21_pose_edit.json)，按[模型依赖说明](example_workflows/qwen21_pose_gallery.md)选择 Qwen Image 2.1 BF16、Qwen3-VL 编码器、VAE 和 **QI2.1 专用 Pose Studio v2 LoRA**。
+3. 在 Pose Gallery 选择姿势。图库原图连接编码器 `image_1`，人物参考连接 `image_2`。通用提示词保留人物身份、服装、画风、背景与光照，不含固定动作名称。
+4. 点击运行，成图与姿势原图分别保存在 `output/images/qwen2.1/pose_gallery/results/` 和 `poses/`。
+
+LoRA 强度 1，25 步、CFG 1、Euler/simple、种子 20261029，不叠加 Turbo LoRA。此链路直接使用图库线稿作为图像条件。
+
+![Qwen Image 2.1 Pose Gallery工作流实测截图](docs/images/qwen21_pose_gallery_workflow.png)
+
+参考人物（下列两组测试共用）：
+
+<img src="example_workflows/assets/pose_gallery_person_reference.png" alt="Qwen姿态编辑人物参考图" width="240">
+
+| 图库姿势原图 | Qwen Image 2.1 生成结果 |
+| --- | --- |
+| ![P002站姿原图](library/img/full_sexy_P002_front.png) | ![Qwen通用提示词站姿结果](example_workflows/assets/qwen21_generic_result.png) |
+| ![P031跪姿原图](library/img/full_sexy_P031_front.png) | ![Qwen通用提示词跪姿结果](example_workflows/assets/qwen21_generic_kneeling_result.png) |
+
+两组结果分别对应 `full_sexy_P002_front` 和 `full_sexy_P031_front`，使用相同人物参考、同一份通用提示词，仅切换姿势 ID。保留了酒红色上衣、白裤和发型，同时由站姿切换为跪姿。其他复杂姿势及多人姿势尚未覆盖，仍可能需要补充文字、调整参数或重试。详细记录见[实测摘要](example_workflows/pose_gallery_qwen21_validation.json)。
 
 ## 素材和许可
 

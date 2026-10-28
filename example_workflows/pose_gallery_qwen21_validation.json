@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-29",
+  "timezone": "Asia/Shanghai",
+  "generic_prompt_tested": true,
+  "steps": 25,
+  "cfg": 1,
+  "seed": 20261029,
+  "sampler": "euler",
+  "scheduler": "simple",
+  "lora_strength": 1,
+  "tests": [
+    {
+      "pose_id": "full_sexy_P002_front",
+      "prompt_id": "5f79f767-109e-4fde-b8b7-aff86a19a8e1",
+      "elapsed_seconds": 17.05,
+      "output_size": [
+        896,
+        1184
+      ],
+      "status": "success",
+      "visual_review": "arms behind head and corresponding standing/kneeling pose followed; reference clothing and hairstyle retained"
+    },
+    {
+      "pose_id": "full_sexy_P031_front",
+      "prompt_id": "a0d0cbbf-8732-4423-890f-8275a756feb2",
+      "elapsed_seconds": 16.818,
+      "output_size": [
+        896,
+        1184
+      ],
+      "status": "success",
+      "visual_review": "arms behind head and corresponding standing/kneeling pose followed; reference clothing and hairstyle retained"
+    }
+  ],
+  "limitations": "Only these two single-person frontal poses tested; not a guarantee for all poses. Timings use warm models."
+}
