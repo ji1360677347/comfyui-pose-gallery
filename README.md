@@ -16,32 +16,31 @@ ComfyUI 本地中文姿势图库节点。参考并改编 [ai-pose-gallery-zh](ht
 git clone https://github.com/wangweihong/comfyui-pose-gallery.git
 ```
 
-重启 ComfyUI 并刷新浏览器。仓库已直接包含 **1,439 张 JPG 缩略图和中文索引**，克隆后即可离线浏览、搜索和筛选图库，无需另外下载缩略图。
+重启 ComfyUI 并刷新浏览器。仓库已直接包含 **1,439 张原尺寸 PNG、1,439 张 JPG 缩略图和中文索引**。克隆后即可离线浏览、预览原图，并将所选姿势输出给工作流，无需运行额外的素材下载脚本。完整素材约 660 MB。
 
 ```text
 comfyui-pose-gallery/
 └── library/
-    ├── data/       # 随仓库提供的中文姿势索引和分类
-    ├── thumbs/     # 随仓库提供的 1,439 张缩略图
+    ├── data/       # 中文姿势索引和分类
+    ├── img/        # 1,439 张原尺寸 PNG，900×1200
+    ├── thumbs/     # 1,439 张缩略图 JPG，300×400
     └── SOURCE.json # 素材来源和版本
 ```
 
-### 安装原尺寸图片（用于大图预览及生图）
+### 已安装旧版：补齐原图
 
-缩略图为 300×400 JPG；节点向工作流输出的原图为 900×1200 PNG。**本仓库包含缩略图，原尺寸 PNG 仍需单独安装**。在节点目录使用 ComfyUI 所在环境的 Python 执行：
-
-```bash
-cd comfyui-pose-gallery
-python scripts/install_library.py
-```
-
-脚本需要 Git，会从 [wangweihong/ai-pose-gallery-zh](https://github.com/wangweihong/ai-pose-gallery-zh) 获取完整图库，约 660 MB，并将原图安装到 `library/img/`。已有完整图库 Git clone 时，也可直接复制安装：
+旧版仓库仅包含缩略图，可能出现“图库能浏览，但使用此姿势后节点不显示图片”。在节点目录更新即可：
 
 ```bash
-python scripts/install_library.py --source /path/to/ai-pose-gallery-zh
+cd ComfyUI/custom_nodes/comfyui-pose-gallery
+git pull
 ```
 
-安装完成后，浏览姿势和向工作流加载原图均使用本地文件。已经安装完整素材的环境无需重复下载；本项目实测的本地 ComfyUI 环境已有全部原图和缩略图。若提示“图片缺失”，请先安装原图，再重启 ComfyUI。
+更新后重启 ComfyUI，并强制刷新浏览器（Ctrl+Shift+R）。如果更新工具不会补齐素材，确认当前安装目录下存在 `library/img/`；不要只复制 `web/` 或缩略图目录。
+
+若原图加载失败，节点会显示对应图片路径和更新提示，不再只显示空白。使用 `COMFYUI_POSE_GALLERY_LIBRARY` 时，该自定义目录也必须包含完整的 `data/`、`img/` 和 `thumbs/`。
+
+`scripts/install_library.py` 保留用于手动修复或从已有的原图库 Git clone 复制素材，正常安装不需要执行它。
 
 节点依赖均使用 ComfyUI 已有的 Pillow、NumPy、PyTorch、aiohttp。
 
@@ -87,7 +86,7 @@ PNG 包含实际 API 参数和可导入工作流。开发工作区的 `images/mo
 
 ## 素材和许可
 
-节点代码及改编的画廊页面遵循 MIT；保留上游声明，详见 LICENSE、NOTICE.md。图片及原始数据权利属于原作者ギア，中文数据由 Anhao 整理，不适用代码 MIT 许可。仓库的 `library/thumbs/` 和 `library/data/` 包含来自原图库的缩略图及中文索引，并保留素材来源和上游许可说明；这些素材不适用节点代码的 MIT 许可。原尺寸 PNG 单独安装到 `library/img/`，该目录不纳入 Git。原站链接和来源说明保留，已移除上游统计脚本。
+节点代码及改编的画廊页面遵循 MIT；保留上游声明，详见 LICENSE、NOTICE.md。图片及原始数据权利属于原作者ギア，中文数据由 Anhao 整理，不适用代码 MIT 许可。仓库的 `library/img/`、`library/thumbs/` 和 `library/data/` 包含来自原图库的原尺寸图片、缩略图及中文索引，并保留素材来源和上游许可说明；这些素材不适用节点代码的 MIT 许可。原站链接和来源说明保留，已移除上游统计脚本。
 
 ## 验证
 

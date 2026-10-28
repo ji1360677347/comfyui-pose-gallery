@@ -15,12 +15,35 @@ app.registerExtension({
         window.removeEventListener("message", receive);
         dialog?.remove(); dialog = null; frame = null;
       };
+      const previewBox = document.createElement("div");
+      previewBox.style.cssText = "position:relative;width:100%;height:100%;background:#f8f7f3;border-radius:8px;overflow:hidden;";
       const preview = document.createElement("img");
       preview.alt = "所选姿势预览";
-      preview.style.cssText = "width:100%;height:100%;object-fit:contain;background:#f8f7f3;border-radius:8px;";
+      preview.style.cssText = "display:block;width:100%;height:100%;object-fit:contain;";
+      const previewError = document.createElement("div");
+      previewError.setAttribute("role", "status");
+      previewError.setAttribute("aria-live", "polite");
+      previewError.style.cssText = "display:none;position:absolute;inset:16px;place-items:center;color:#8b2e2e;font:14px/1.6 sans-serif;text-align:left;overflow-wrap:anywhere;";
+      previewBox.append(preview, previewError);
+      let previewRequest = 0;
       const update = () => {
-        preview.src = api.apiURL(`/pose_gallery/assets/img/${encodeURIComponent(value.value)}.png`);
-        preview.title = value.value;
+        const request = ++previewRequest;
+        const poseId = String(value.value);
+        preview.style.display = "block";
+        previewError.style.display = "none";
+        preview.onload = () => {
+          if (request !== previewRequest) return;
+          preview.style.display = "block";
+          previewError.style.display = "none";
+        };
+        preview.onerror = () => {
+          if (request !== previewRequest) return;
+          preview.style.display = "none";
+          previewError.textContent = `原图加载失败：library/img/${poseId}.png。请在节点目录执行 git pull 更新完整图库，重启 ComfyUI 后刷新浏览器。若使用自定义图库目录，请确认该目录包含对应原图。`;
+          previewError.style.display = "grid";
+        };
+        preview.src = api.apiURL(`/pose_gallery/assets/img/${encodeURIComponent(poseId)}.png`);
+        preview.title = poseId;
       };
       const previousCallback = value.callback;
       value.callback = function () { previousCallback?.apply(this, arguments); update(); };
@@ -56,7 +79,7 @@ app.registerExtension({
         dialog.addEventListener("click", event => { if (event.target === dialog) close(); });
         document.body.append(dialog); dialog.showModal();
       }, { serialize: false });
-      node.addDOMWidget("pose_preview", "image", preview, { serialize: false, hideOnZoom: false, getMinHeight: () => 300, getMaxHeight: () => 500 });
+      node.addDOMWidget("pose_preview", "image", previewBox, { serialize: false, hideOnZoom: false, getMinHeight: () => 300, getMaxHeight: () => 500 });
       const configured = node.onConfigure;
       node.onConfigure = function () { configured?.apply(this, arguments); update(); };
       const removed = node.onRemoved;

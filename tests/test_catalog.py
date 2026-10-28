@@ -38,6 +38,11 @@ class CatalogTests(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             catalog.asset('thumbs', 'test_front.jpg')
 
+    def test_missing_original_reports_how_to_update_the_gallery(self):
+        (catalog.LIBRARY / 'img/test_front.png').unlink()
+        with self.assertRaisesRegex(FileNotFoundError, r'img/test_front.png.*git pull'):
+            catalog.asset('img', 'test_front.png')
+
     def test_symlink_outside_library_is_rejected(self):
         file = catalog.LIBRARY / 'img/test_front.png'
         file.unlink(); file.symlink_to('/etc/passwd')

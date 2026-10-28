@@ -1,5 +1,6 @@
 library/*
 !library/thumbs/
+!library/img/
 !library/data/
 !library/SOURCE.json
 !library/LICENSE

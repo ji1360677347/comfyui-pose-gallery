@@ -35,5 +35,5 @@ def asset(kind, filename):
     if expected != relative.as_posix() or not target.is_relative_to(LIBRARY):
         raise ValueError('图片不在图库中')
     if not target.is_file():
-        raise FileNotFoundError(f'图片缺失：{relative}，请重新安装图库')
+        raise FileNotFoundError(f'图片缺失：{relative}。请在 comfyui-pose-gallery 目录执行 git pull 获取完整图库，然后重启 ComfyUI；使用自定义图库目录时，请确认该目录包含原图和缩略图。')
     return target

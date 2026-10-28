@@ -1,6 +1,6 @@
 [project]
 name = "comfyui-pose-gallery"
-version = "0.1.0"
+version = "0.1.1"
 description = "Browse a local Chinese pose gallery and output pose reference images in ComfyUI"
 requires-python = ">=3.10"
 dependencies = ["Pillow", "numpy", "torch", "aiohttp"]
