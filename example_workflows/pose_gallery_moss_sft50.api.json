@@ -1,0 +1,251 @@
+{
+  "1": {
+    "class_type": "PoseGallery",
+    "inputs": {
+      "pose_id": "full_sexy_P031_front"
+    },
+    "_meta": {
+      "title": "Pose Gallery 姿势图库 - 浏览并选择人体姿势原图"
+    }
+  },
+  "2": {
+    "class_type": "DepthAnythingV2Preprocessor",
+    "inputs": {
+      "image": [
+        "1",
+        0
+      ],
+      "ckpt_name": "depth_anything_v2_vitl.pth",
+      "resolution": 512
+    },
+    "_meta": {
+      "title": "Depth Anything V2 - Relative - 将姿势原图估计为近白远黑深度图"
+    }
+  },
+  "3": {
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": [
+        "2",
+        0
+      ],
+      "upscale_method": "bicubic",
+      "width": 1056,
+      "height": 1408,
+      "crop": "disabled"
+    },
+    "_meta": {
+      "title": "Upscale Image - 深度图等比放大至1056乘1408"
+    }
+  },
+  "4": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "3",
+        0
+      ],
+      "filename_prefix": "images/moss/pose/depth/pose_depth"
+    },
+    "_meta": {
+      "title": "Save Image - 保存深度图及工作流"
+    }
+  },
+  "5": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "moss/moss_image_sft_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Load Diffusion Model - 加载MOSS常规SFT模型"
+    }
+  },
+  "6": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": [
+        "5",
+        0
+      ],
+      "lora_name": "moss/moss_image_color_depth_control.safetensors",
+      "strength_model": 1.0
+    },
+    "_meta": {
+      "title": "Load LoRA - 加载MOSS深度控制适配器"
+    }
+  },
+  "7": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "moss/qwen3.5_9b_int8_convrot.safetensors",
+      "type": "moss_image",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "Load CLIP - 加载Qwen文本编码器"
+    }
+  },
+  "8": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "moss/flux2-vae.safetensors"
+    },
+    "_meta": {
+      "title": "Load VAE - 加载FLUX2图像编解码器"
+    }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "A cinematic full-body photograph of one adult 28-year-old East Asian woman kneeling on both knees, with both hands behind her head and elbows spread wide, matching the reference pose. She wears a dark emerald green long-sleeved blouse and beige tailored trousers. Natural human proportions, realistic skin, expressive face, black shoulder-length hair. In a warm sunlit photography studio, soft natural window light, subtle shadows, wooden floor, professional editorial fashion photography, detailed fabric texture, no text.",
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt) - 描述人物服装和环境"
+    }
+  },
+  "10": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "worst quality, bad anatomy, extra limbs, extra fingers, deformed hands, mannequin, doll, plastic skin, watermark, jpeg artifact",
+      "clip": [
+        "7",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt) - 抑制畸形及素体质感"
+    }
+  },
+  "11": {
+    "class_type": "MOSSImageControl",
+    "inputs": {
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "10",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ],
+      "strength": 0.75,
+      "start_percent": 0.0,
+      "end_percent": 0.5,
+      "depth_map": [
+        "3",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "MOSS-Image Color/Depth Control - 用前半程深度控制约束人体姿态"
+    }
+  },
+  "12": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": [
+        "6",
+        0
+      ],
+      "shift": 5.0,
+      "sampling": "flow"
+    },
+    "_meta": {
+      "title": "ModelSamplingAuraFlow - 设置MOSS时间步偏移5"
+    }
+  },
+  "13": {
+    "class_type": "SkipLayerGuidanceDiTSimple",
+    "inputs": {
+      "model": [
+        "12",
+        0
+      ],
+      "double_layers": "",
+      "single_layers": "22",
+      "start_percent": 0.0,
+      "end_percent": 1.0
+    },
+    "_meta": {
+      "title": "SkipLayerGuidanceDiTSimple - 负向分支跳过第22层"
+    }
+  },
+  "14": {
+    "class_type": "EmptyFlux2LatentImage",
+    "inputs": {
+      "width": 1056,
+      "height": 1408,
+      "batch_size": 1
+    },
+    "_meta": {
+      "title": "Empty Flux 2 Latent - 创建与深度图一致的潜空间"
+    }
+  },
+  "15": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "13",
+        0
+      ],
+      "seed": 2026102801,
+      "steps": 50,
+      "cfg": 3.0,
+      "sampler_name": "euler",
+      "scheduler": "sgm_uniform",
+      "positive": [
+        "11",
+        0
+      ],
+      "negative": [
+        "11",
+        1
+      ],
+      "latent_image": [
+        "14",
+        0
+      ],
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "KSampler - MOSS SFT常规50步深度引导生图"
+    }
+  },
+  "16": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "15",
+        0
+      ],
+      "vae": [
+        "8",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "VAE Decode - 解码生成图像"
+    }
+  },
+  "17": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "16",
+        0
+      ],
+      "filename_prefix": "images/moss/pose/result/moss_sft50_pose"
+    },
+    "_meta": {
+      "title": "Save Image - 保存最终人物图及完整工作流"
+    }
+  }
+}
