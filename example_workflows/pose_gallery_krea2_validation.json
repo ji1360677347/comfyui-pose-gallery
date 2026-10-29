@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-29",
+  "status": "success",
+  "method": "PoseGallery -> DepthAnythingV2Preprocessor -> Krea2ControlImageEncode -> Krea2ControlApply",
+  "same_prompt_and_seed": true,
+  "pose_words_in_prompt": false,
+  "width": 896,
+  "height": 1184,
+  "steps": 8,
+  "cfg": 1,
+  "seed": 20261029,
+  "sampler": "er_sde",
+  "scheduler": "simple",
+  "control_strength": 1,
+  "cases": [
+    {
+      "pose_id": "full_sexy_P031_front",
+      "prompt_id": "8f46f83f-bd63-4eec-aad0-edbb9d6a9630",
+      "elapsed_seconds": 67.765,
+      "status": "success",
+      "visual_review": "Kneeling with both arms raised and hands behind head; coarse pose follows reference, feet placement differs.",
+      "output_size": [
+        896,
+        1184
+      ]
+    },
+    {
+      "pose_id": "full_sexy_P002_front",
+      "prompt_id": "f20c7519-489a-4dea-b6c2-d8eb40e3dd18",
+      "elapsed_seconds": 9.416,
+      "status": "success",
+      "visual_review": "Standing with hands behind head; coarse pose follows reference, minor body-angle differences.",
+      "output_size": [
+        896,
+        1184
+      ]
+    }
+  ],
+  "limitations": "Only two poses tested. Coarse pose follows depth; hands, feet and exact joint angles may deviate. Text-to-image generation does not preserve a supplied reference identity.",
+  "timezone": "Asia/Shanghai"
+}

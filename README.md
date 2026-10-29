@@ -14,6 +14,7 @@ ComfyUI 本地中文姿势图库节点。参考并改编 [ai-pose-gallery-zh](ht
 | --- | --- | --- |
 | [MOSS 深度控制参考版](example_workflows/pose_gallery_moss_sft50_reference.json) | 图库姿势 → Depth Anything 深度图 → 根据文字生成角色 | SFT 50 步，ER-SDE，896×1184，约 46.4 秒 |
 | [Qwen Image 2.1 姿态编辑](example_workflows/pose_gallery_qwen21_pose_edit.json) | 图库姿势 + 人物参考 → 保留人物外观并迁移姿态 | 25 步，Euler/simple，896×1184，约 17 秒/张（模型已加载） |
+| [Krea2 深度控制](example_workflows/pose_gallery_krea2_depth.json) | 图库姿势 → Depth Anything V2 → Krea2 Turbo 深度控制文生图 | 8 步，ER-SDE，896×1184，热加载约 9.4 秒 |
 
 下方提供实际 ComfyUI 截图及姿势与成图对照。运行时间受硬件、模型加载与缓存影响。
 
@@ -137,6 +138,19 @@ LoRA 强度 1，25 步、CFG 1、Euler/simple、种子 20261029，不叠加 Turb
 | ![P031跪姿原图](library/img/full_sexy_P031_front.png) | ![Qwen通用提示词跪姿结果](example_workflows/assets/qwen21_generic_kneeling_result.png) |
 
 两组结果分别对应 `full_sexy_P002_front` 和 `full_sexy_P031_front`，使用相同人物参考、同一份通用提示词，仅切换姿势 ID。保留了酒红色上衣、白裤和发型，同时由站姿切换为跪姿。其他复杂姿势及多人姿势尚未覆盖，仍可能需要补充文字、调整参数或重试。详细记录见[实测摘要](example_workflows/pose_gallery_qwen21_validation.json)。
+
+## Krea2 · Pose Gallery 深度控制
+
+导入 [Krea2 深度工作流](example_workflows/pose_gallery_krea2_depth.json)，或使用 [P002 站姿对照版](example_workflows/pose_gallery_krea2_depth_standing.json)。两份工作流均有同名 `.api.json`。链路为 Pose Gallery → Depth Anything V2 Large → Krea2 Control Image Encode / Apply → Krea2 Turbo；具体依赖、模型路径和操作步骤见[完整使用说明](example_workflows/krea2_pose_gallery.md)。
+
+本地实测在相同提示词和种子下，仅切换图库姿势，分别生成对应跪姿与站姿。提示词只描述人物、服装、场景和画风，无需填写固定动作。896×1184、8 步、CFG 1、ER-SDE/simple、深度控制强度 1；首轮含模型冷加载约 67.8 秒，模型已加载后约 9.4 秒。它是文生图流程，人物由文字生成，没有人物身份参考图输入。
+
+| 图库原图 | Krea2 生成结果 |
+| --- | --- |
+| ![P031跪姿原图](library/img/full_sexy_P031_front.png) | ![Krea2跪姿结果](example_workflows/assets/krea2_p031_result.png) |
+| ![P002站姿原图](library/img/full_sexy_P002_front.png) | ![Krea2站姿结果](example_workflows/assets/krea2_p002_result.png) |
+
+原图、深度图和成图分别保存在 `output/images/krea2/pose_gallery/poses/`、`depth/` 和 `results/`。目前只验证上述两组，手脚细节和精确关节角度仍可能偏离参考；详细记录见[实测摘要](example_workflows/pose_gallery_krea2_validation.json)。
 
 ## 素材和许可
 

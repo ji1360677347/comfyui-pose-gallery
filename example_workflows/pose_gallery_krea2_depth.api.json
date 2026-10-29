@@ -1,0 +1,233 @@
+{
+  "1": {
+    "class_type": "PoseGallery",
+    "inputs": {
+      "pose_id": "full_sexy_P031_front"
+    },
+    "_meta": {
+      "title": "Pose Gallery 姿势图库 - 浏览并选择姿势原图"
+    }
+  },
+  "2": {
+    "class_type": "DepthAnythingV2Preprocessor",
+    "inputs": {
+      "image": [
+        "1",
+        0
+      ],
+      "ckpt_name": "depth_anything_v2_vitl.pth",
+      "resolution": 768
+    },
+    "_meta": {
+      "title": "Depth Anything V2 - Relative - 将图库线稿转换为深度图"
+    }
+  },
+  "3": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "diffusion_models/krea2_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    },
+    "_meta": {
+      "title": "Load Diffusion Model - 加载本地Krea2 Turbo BF16模型"
+    }
+  },
+  "4": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_4b_fp8_scaled.safetensors",
+      "type": "krea2",
+      "device": "default"
+    },
+    "_meta": {
+      "title": "Load CLIP - 加载Krea2文本编码器"
+    }
+  },
+  "5": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    },
+    "_meta": {
+      "title": "Load VAE - 加载Krea2配套VAE"
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "4",
+        0
+      ],
+      "text": "A full-body editorial photograph of one adult East Asian woman wearing a dark emerald green long-sleeved blouse, beige tailored trousers and brown flat shoes. Natural human proportions, realistic skin and fabric texture. A clean warm-gray photography studio, soft diffused light, subtle ground shadow, professional fashion photography. No text, no watermark."
+    },
+    "_meta": {
+      "title": "CLIP Text Encode (Prompt) - 描述人物与场景而不指定具体动作"
+    }
+  },
+  "7": {
+    "class_type": "ConditioningZeroOut",
+    "inputs": {
+      "conditioning": [
+        "6",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Conditioning Zero Out - 生成空负向条件"
+    }
+  },
+  "8": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 896,
+      "height": 1184,
+      "batch_size": 1
+    },
+    "_meta": {
+      "title": "Empty Latent Image - 设置竖幅输出尺寸"
+    }
+  },
+  "9": {
+    "class_type": "Krea2ControlLoRALoader",
+    "inputs": {
+      "model": [
+        "3",
+        0
+      ],
+      "lora_name": "text2image/krea2/depth-control-lora.safetensors",
+      "strength": 1.0
+    },
+    "_meta": {
+      "title": "Krea2 Control LoRA Loader - 加载Krea2专用深度控制LoRA"
+    }
+  },
+  "10": {
+    "class_type": "Krea2ControlImageEncode",
+    "inputs": {
+      "control_image": [
+        "2",
+        0
+      ],
+      "vae": [
+        "5",
+        0
+      ],
+      "latent": [
+        "8",
+        0
+      ],
+      "resize": "match_latent_size",
+      "upscale_method": "bicubic",
+      "crop": "center",
+      "channel_mode": "rgb",
+      "normalize": "per_image_minmax",
+      "invert": false,
+      "batch_mode": "independent_images"
+    },
+    "_meta": {
+      "title": "Krea2 Control Image Encode - 按输出尺寸编码姿态深度图"
+    }
+  },
+  "11": {
+    "class_type": "Krea2ControlApply",
+    "inputs": {
+      "model": [
+        "9",
+        0
+      ],
+      "control_latent": [
+        "10",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "Krea2 Control Apply - 将姿态深度条件施加到模型"
+    }
+  },
+  "12": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "11",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "8",
+        0
+      ],
+      "seed": 20261029,
+      "steps": 8,
+      "cfg": 1.0,
+      "sampler_name": "er_sde",
+      "scheduler": "simple",
+      "denoise": 1.0
+    },
+    "_meta": {
+      "title": "KSampler - 八步生成并遵循姿态深度条件"
+    }
+  },
+  "13": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "12",
+        0
+      ],
+      "vae": [
+        "5",
+        0
+      ]
+    },
+    "_meta": {
+      "title": "VAE Decode - 解码Krea2生成结果"
+    }
+  },
+  "14": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "13",
+        0
+      ],
+      "filename_prefix": "images/krea2/pose_gallery/results/P031"
+    },
+    "_meta": {
+      "title": "Save Image - 保存Krea2姿态生图结果"
+    }
+  },
+  "15": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "10",
+        1
+      ],
+      "filename_prefix": "images/krea2/pose_gallery/depth/P031"
+    },
+    "_meta": {
+      "title": "Save Image - 保存实际编码的深度控制图"
+    }
+  },
+  "16": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "1",
+        0
+      ],
+      "filename_prefix": "images/krea2/pose_gallery/poses/P031"
+    },
+    "_meta": {
+      "title": "Save Image - 保存图库原图"
+    }
+  }
+}
