@@ -1,0 +1,153 @@
+{
+  "status": "reviewed",
+  "settings": {
+    "steps": 30,
+    "cfg": 4,
+    "seed": 20261030,
+    "strength": 0.75,
+    "control_range": [
+      0,
+      0.85
+    ],
+    "prompt": "unchanged from balanced workflow"
+  },
+  "cases": [
+    {
+      "case": "01_举臂站姿_侧面",
+      "pose_id": "full_single_P019_side",
+      "name": "站立・双臂上举伸展",
+      "view": "侧面",
+      "category": "站姿",
+      "prompt_id": "72cafd39-f91e-4353-95a1-01a4f8da6afd",
+      "status": "success",
+      "seconds": 9.333,
+      "output_size": [
+        896,
+        1184
+      ],
+      "review": "侧面朝向、躯干弧度和举臂轮廓跟随。重叠的手臂与手指细节仍需人工检查。",
+      "review_type": "qualitative_visual_comparison"
+    },
+    {
+      "case": "02_单腿后抬_正面",
+      "pose_id": "full_single_P024_front",
+      "name": "站立・单腿后抬",
+      "view": "正面",
+      "category": "站姿",
+      "prompt_id": "486fe586-29a7-4485-8a40-21b414d1368e",
+      "status": "success",
+      "seconds": 9.334,
+      "output_size": [
+        896,
+        1184
+      ],
+      "review": "单腿后抬、支撑腿和触头动作跟随；此工作流不保证固定人物身份或服装款式一致。",
+      "review_type": "qualitative_visual_comparison"
+    },
+    {
+      "case": "03_后仰坐_正面",
+      "pose_id": "full_single_P001_front",
+      "name": "后仰坐・单膝立起",
+      "view": "正面",
+      "category": "坐姿",
+      "prompt_id": "a4cc084d-4054-4735-9b28-2635871b16f2",
+      "status": "success",
+      "seconds": 9.369,
+      "output_size": [
+        896,
+        1184
+      ],
+      "review": "后仰坐、单膝抬起与撑地手位置跟随；裤腿被生成为较短或卷起的款式。",
+      "review_type": "qualitative_visual_comparison"
+    },
+    {
+      "case": "04_侧坐_斜侧",
+      "pose_id": "full_single_P045_diag",
+      "name": "侧坐・双腿斜向右侧",
+      "view": "斜侧",
+      "category": "侧坐・女孩坐",
+      "prompt_id": "bd094ee2-3d5c-4816-8504-0c6a8d91eb0d",
+      "status": "success",
+      "seconds": 9.302,
+      "output_size": [
+        896,
+        1184
+      ],
+      "review": "斜侧坐、双腿折叠方向和撑地手跟随；新增了参考提示词未要求的肩带与项链。",
+      "review_type": "qualitative_visual_comparison"
+    },
+    {
+      "case": "05_单膝跪_正面",
+      "pose_id": "full_single_P033_front",
+      "name": "单膝跪・手扶膝",
+      "view": "正面",
+      "category": "跪立",
+      "prompt_id": "0484f03d-037d-40bb-8c8f-29f665ec56b9",
+      "status": "success",
+      "seconds": 9.365,
+      "output_size": [
+        896,
+        1184
+      ],
+      "review": "单膝跪、双手扶膝轮廓跟随；肩部关节圆圈被转译为露肩开口，属于控制线残留导致的服装偏差。",
+      "review_type": "qualitative_visual_comparison"
+    },
+    {
+      "case": "06_俯卧抬腿_正面",
+      "pose_id": "full_single_P051_front",
+      "name": "俯卧・抬腿",
+      "view": "正面",
+      "category": "趴卧",
+      "prompt_id": "9862d151-247c-42c4-961c-94f9c3c7386d",
+      "status": "success",
+      "seconds": 9.546,
+      "output_size": [
+        896,
+        1184
+      ],
+      "review": "俯卧、肘撑与双腿上抬轮廓跟随；肩部关节圆圈被转译为圆形装饰，不宜直接作为无瑕疵成图。",
+      "review_type": "qualitative_visual_comparison"
+    },
+    {
+      "case": "07_蹲姿_侧面",
+      "pose_id": "full_single_P061_side",
+      "name": "蹲姿・手扶膝",
+      "view": "侧面",
+      "category": "蹲姿",
+      "prompt_id": "88aef9cd-5396-4915-a040-00638c123fc5",
+      "status": "success",
+      "seconds": 9.397,
+      "output_size": [
+        896,
+        1184
+      ],
+      "review": "侧面蹲姿及手扶膝跟随；头部明显上仰，与参考图头部角度存在偏移。",
+      "review_type": "qualitative_visual_comparison"
+    },
+    {
+      "case": "08_扭身展臂_正面",
+      "pose_id": "full_single_P077_front",
+      "name": "扭身・站姿展臂",
+      "view": "正面",
+      "category": "扭身",
+      "prompt_id": "5f4a2b17-6d87-4451-93ea-59ccf4d58885",
+      "status": "success",
+      "seconds": 9.521,
+      "output_size": [
+        896,
+        1184
+      ],
+      "review": "扭身、双臂展开与双腿位置总体跟随；手指和躯干转动幅度仍需人工检查。",
+      "review_type": "qualitative_visual_comparison"
+    }
+  ],
+  "summary": {
+    "completed": 8,
+    "execution_errors": 0,
+    "mean_seconds": 9.396,
+    "timing": "warm models, excluding queue wait",
+    "coverage": "8 additional single-person poses, front/side/diagonal views",
+    "conclusion": "Major pose outlines followed in these samples; visible garment/accessory leakage from mannequin joints in cases05/06 and head-angle drift in case07.",
+    "limitations": "One fixed seed and one prompt per pose; no quantitative pose scoring, multi-seed stability or identity consistency evaluation."
+  }
+}

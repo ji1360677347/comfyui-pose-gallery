@@ -13,6 +13,7 @@ ComfyUI 本地中文姿势图库节点。参考并改编 [ai-pose-gallery-zh](ht
 | 工作流 | 输入与用途 | 本地实测 |
 | --- | --- | --- |
 | [MOSS 深度控制参考版](example_workflows/pose_gallery_moss_sft50_reference.json) | 图库姿势 → Depth Anything 深度图 → 根据文字生成角色 | SFT 50 步，ER-SDE，896×1184，约 46.4 秒 |
+| [Anima 动漫姿态生图](example_workflows/pose_gallery_anima_lllite_v2.json) | 图库线稿 + 文字 → Anima LLLite v2 生成动漫人物 | 30 步、CFG4，新增8组实测，约9.4秒/张（模型已加载） |
 | [Qwen Image 2.1 姿态编辑](example_workflows/pose_gallery_qwen21_pose_edit.json) | 图库姿势 + 人物参考 → 保留人物外观并迁移姿态 | 25 步，Euler/simple，896×1184，约 17 秒/张（模型已加载） |
 | [Krea2 深度控制](example_workflows/pose_gallery_krea2_depth.json) | 图库姿势 → Depth Anything V2 → Krea2 Turbo 深度控制文生图 | 8 步，ER-SDE，896×1184，热加载约 9.4 秒 |
 
@@ -151,6 +152,20 @@ LoRA 强度 1，25 步、CFG 1、Euler/simple、种子 20261029，不叠加 Turb
 | ![P002站姿原图](library/img/full_sexy_P002_front.png) | ![Krea2站姿结果](example_workflows/assets/krea2_p002_result.png) |
 
 原图、深度图和成图分别保存在 `output/images/krea2/pose_gallery/poses/`、`depth/` 和 `results/`。目前只验证上述两组，手脚细节和精确关节角度仍可能偏离参考；详细记录见[实测摘要](example_workflows/pose_gallery_krea2_validation.json)。
+
+## Anima Base v1 · 图库姿态生图
+
+导入 [Anima LLLite v2 工作流](example_workflows/pose_gallery_anima_lllite_v2.json)，按[依赖和操作说明](example_workflows/anima_pose_gallery.md)准备主模型、编码器、VAE及LLLite v2控制权重。在Pose Gallery选择姿势后，线稿直接驱动动漫人物生成；提示词可专注描述服装、画风与场景。
+
+30步、CFG4、ER-SDE/simple、控制强度0.75，输出896×1184。新增8组测试使用同一提示词与种子，模型已加载时平均约9.4秒/张。主要动作有跟随；单膝跪和俯卧存在肩部构造线转成服装/装饰的问题，蹲姿头部角度有偏移，其他姿势与随机种子仍需分别评估。
+
+![Anima工作流实测截图](docs/images/anima/workflow.png)
+
+每组左侧为图库姿势，右侧为实际Anima生成结果：
+
+![Anima八组姿势与结果对照](docs/images/anima/comparison.png)
+
+[逐组原图、成图和评价](example_workflows/anima_pose_gallery.md) · [JSON实测记录](example_workflows/pose_gallery_anima_validation.json)。
 
 ## 素材和许可
 
